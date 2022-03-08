@@ -17,7 +17,7 @@ const props = defineProps({
       </el-row>          
     </header>
 </template>
-<style lang="scss" scoped>
+<style lang="scss">
   header {
     background: var(--vt-c-green);
     margin-bottom: 0.5rem;

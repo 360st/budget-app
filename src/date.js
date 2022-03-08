@@ -1,14 +1,15 @@
 let date = new Date();
-let month = date.getMonth() + 1
-let day = date.getDay()
-let dayDecimal = date.getDay()
+let month = date.getMonth()
+let displayMonth = date.getMonth() + 1
+let day = date.getDate()
+let displayDay = date.getDate()
 
 function string(data){
   return data.toString().split('')
 }
 
-let newMonth = string(month)
-let newDay = string(dayDecimal)
+let newMonth = string(displayMonth)
+let newDay = string(displayDay)
 
 function checkLength(data){
   data.length === 1 && data.unshift(0)
@@ -17,9 +18,9 @@ function checkLength(data){
 checkLength(newMonth)
 checkLength(newDay)
 
-month = newMonth.join('')
-dayDecimal = newDay.join('')
+displayMonth = newMonth.join('')
+displayDay = newDay.join('')
 
 export default {
-    month, day, date, dayDecimal
+  displayMonth, day, date, displayDay, month
 }

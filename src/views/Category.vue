@@ -1,7 +1,10 @@
 <script setup>
-import { computed, ref } from 'vue'
-import { EditPen, Back } from '@element-plus/icons-vue'   
+import { EditPen } from '@element-plus/icons-vue' 
+import { computed, ref } from 'vue'  
 import { useExpensesStore } from '../stores/expenses'
+import LayoutFooter from '../components/LayoutFooter.vue'
+import LayoutHeader from '../components/LayoutHeader.vue'
+import CategoryList from '../components/CategoryList.vue'
  
 const { addCategory, editCategory, categories } = useExpensesStore()
 const name = ref()
@@ -17,13 +20,7 @@ const parse = computed(() => budget.value !== null ?  parseInt(budget.value, 10)
 
 </script>
 <template>
-   <header>
-     <el-row>
-       <el-col>
-         <h1>Dodaj kategorię</h1>
-       </el-col>
-     </el-row>
-   </header>
+   <LayoutHeader title="Dodaj kategorię"></LayoutHeader>
    <main>    
      <el-row>
        <el-col class="m-05">
@@ -36,24 +33,11 @@ const parse = computed(() => budget.value !== null ?  parseInt(budget.value, 10)
          </el-input>
        </el-col>    
      </el-row>   
-     <el-row>
-         <el-col>
-             <ul>
-                 <li v-for="(categories, index) in categories" :key="index" @click="editCategory(index, parse)">{{categories.name}} {{categories.budget}}</li>
-             </ul>
-         </el-col>
-    </el-row> 
+     <CategoryList /> 
    </main>
-   <footer>
-     <el-row :gutter="10">
-       <el-col :span="12">
-         <router-link to="/"><el-button size="large"><span style="margin-right:5px"></span> <el-icon :size="20"><back /></el-icon></el-button></router-link>
-       </el-col>    
-       <el-col :span="12">
-         <el-button size="large" type="success" color="#002a3a" @click="addCategory({name, budget: parse}), resetForm()"><span style="margin-right:5px">Dodaj</span> <el-icon :size="20"><edit-pen  /></el-icon></el-button>
-       </el-col>        
-     </el-row>
-   </footer>  
+   <LayoutFooter>
+     <el-button size="large" type="success" color="#002a3a" @click="addCategory({name, budget: parse}), resetForm()"><span style="margin-right:5px">Dodaj</span> <el-icon :size="20"><edit-pen  /></el-icon></el-button>
+   </LayoutFooter>
 </template>
 <style scoped>
 

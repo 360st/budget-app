@@ -1,73 +1,47 @@
 <script setup>
-import { computed } from '@vue/runtime-core'
+import { computed, ref } from '@vue/runtime-core'
 import { useExpensesStore } from '../stores/expenses'
+import { Edit, Delete } from '@element-plus/icons-vue'
 
-const { expenses, categories } = useExpensesStore()
+const { categories, editCategory, removeCategory } = useExpensesStore()
+const budget = ref(null)
+const parse = computed(() => budget.value !== null ?  parseInt(budget.value, 10) : null)
+const clicedIndex = ref(null)
 
 </script>
 <template>
-    <section>
-    <el-row>
-      <el-col>
-        <h2>Wydatki z dnia dzisiejszego</h2>
-      </el-col>
-    </el-row>  
-   </section> 
-   <section> 
-     <el-row class="small-pad-bottom-top" v-for="(expense, index) in expenses" :key="index">
-       <el-row class="wrapper">
-          <el-col :xs="18" :sm="19">
-              <p class="product-type"><span class="grey">{{expense.dayDecimal}}.{{expense.month}} </span> {{expense.category}}</p>
-          </el-col>
-          <el-col :xs="6" :sm="6" style="text-align:right">
-              <p class="price">{{expense.price}} <span class="small">PLN</span></p>
-          </el-col>
-          <el-col :span="24" v-for="(categories, index) in categories" :key="index">
-            <div v-if="categories.name === expense.category">
-            <p class="progress" v-if="categories.budget">
-              <span class="progress-bar" :class="{green: categories.sum / categories.budget * 100 < 80, red: categories.sum / categories.budget * 100 > 100}" :style="`width:${categories.sum / categories.budget * 100}% `"></span>  
-            </p>
-            </div>
-          </el-col>
-       </el-row>  
-     </el-row>    
-   </section>
+  <el-row class="small-pad-bottom-top" v-for="(categories, index) in categories" :key="index" >
+    <el-row class="wrapper">
+        <el-col @click="removeCategory(index)" :span="2" style="display:flex; cursor: pointer">
+          <el-icon :size="18"><delete /></el-icon>
+        </el-col>
+        <el-col :span="12">
+          <p class="product-type"> {{categories.name}}: {{categories.budget}}</p>
+        </el-col>
+        <el-col :span="8" class="text-right">
+          <p class="price" :class="{active: index == clicedIndex}"><el-input @input="editCategory(index, parse)" v-model="budget" size="small"><template #append>PLN</template></el-input></p>
+        </el-col>
+        <el-col style="display:flex; cursor: pointer; justify-content: flex-end;" :span="2" @click="clicedIndex = index">
+          <el-icon :size="18"><edit /></el-icon>
+        </el-col>
+    </el-row>     
+  </el-row> 
 </template>
 <style lang="scss" scoped>
-  main {    
-    .wrapper {
-      width: 100%;
-      background: #fff;
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-      width: 100%;
-      border-radius: 4px;
-      border-bottom: 1px solid rgb(230, 230, 230); 
-        .progress {
-          width: 100%;
-          height: 2px;
-          border-radius: 3px;
-          margin-top: 3px;
-          overflow: hidden;
-          background: var(--vt-c-white-mute);
-          .progress-bar {
-            display: block;
-            background: rgb(250, 180, 50);
-            opacity: 0.5;
-            height: 15px;
-            &.green {
-              background: var(--vt-c-green);
-            }
-            &.red {
-              background: var(--vt-c-red);
-              opacity: 0.5;
-            }
-          }
+  .el-row {
+      display: flex;
+      align-items: center;
+      .price {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s ease-in;
+        &.active {
+          visibility: inherit;
+          opacity: 1;
         }
-        .price {
-          font-weight: 700;
-        }
-        
-    }
+      }
   }
 </style>
