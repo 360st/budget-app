@@ -1,17 +1,23 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { useExpensesStore } from '../stores/expenses'
 import ExpensesList from '../components/ExpensesList.vue'
-import Date from '../date'
 
-const { expenses, categories } = useExpensesStore()
+import Date from '../date'
+import { storeToRefs } from 'pinia'
+
+
+const { expenses } = storeToRefs(useExpensesStore())
 const { day, month } = Date
 
 const showMore = ref(false)
-const todayExpensesList = expenses.filter(e => e.day === day && e.month === month)
-const otherExpensesList = expenses.filter(e => e.day !== day && e.month === month)
+const todayExpensesList = ref(null)
+const otherExpensesList = ref(null)
 
-
+watchEffect(()=> {
+  todayExpensesList.value = expenses.value.filter(e => e.day === day && e.month === month)
+  otherExpensesList.value = expenses.value.filter(e => e.day !== day && e.month === month)
+})
 </script>
 <template>
     <section>

@@ -28,7 +28,7 @@ const parse = computed(() => budget.value !== null ?  parseInt(budget.value, 10)
          </el-input>
        </el-col>
        <el-col class="m-05">
-         <el-input size="large" type="number" v-model="budget" placeholder="Ustal bużdzet">
+         <el-input size="large" type="number" v-model="budget" placeholder="Ustal budżet">
            <template #append>PLN</template>
          </el-input>
        </el-col>    

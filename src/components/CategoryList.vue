@@ -16,7 +16,7 @@ const clicedIndex = ref(null)
           <el-icon :size="18"><delete /></el-icon>
         </el-col>
         <el-col :span="12">
-          <p class="product-type"> {{categories.name}}: {{categories.budget}}</p>
+          <p class="product-type"> {{categories.name}}<span v-if="categories.budget">:</span> {{categories.budget}} <span v-if="categories.budget">zł</span></p>
         </el-col>
         <el-col :span="8" class="text-right">
           <p class="price" :class="{active: index == clicedIndex}"><el-input @input="editCategory(index, parse)" v-model="budget" size="small"><template #append>PLN</template></el-input></p>

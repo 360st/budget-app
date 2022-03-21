@@ -1,14 +1,22 @@
 <script setup>
+import UsersLogOut from '../components/UsersLogOut.vue'
+import { useRoute } from 'vue-router'
 
 const props = defineProps({
     title: {
         type: String,
     }
 })
+const route = useRoute()
 
 </script>
 <template>
     <header>
+      <el-row v-if="route.name !== 'login'">
+        <el-col>
+          <UsersLogOut />
+        </el-col>
+      </el-row>
       <el-row>
         <el-col>
             <h1>{{props.title}}</h1>

@@ -1,29 +1,41 @@
 <script setup>
 import { useExpensesStore } from '../stores/expenses'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import ExpensesWrapper from '../components/ExpensesWrapper.vue'
 import LayoutHeader from '../components/LayoutHeader.vue'
 import MonthBudgetSpend from '../components/MonthBudgetSpend.vue'
 import LayoutFooterMain from '../components/LayoutFooterMain.vue'
 
-const { months, selectActualMonth, findCurrentMonth, currentDaySpend } = useExpensesStore()
+const store = useExpensesStore()
+const { selectActualMonth, findCurrentMonth, currentDaySpend, weeklyExpenses } = storeToRefs(store)
 
+selectActualMonth.value
 const orangeRedClassesDay = computed(() => ({
-  orange: currentDaySpend > Math.floor(findCurrentMonth.monthBudget / 30) * 0.7,
-  red: currentDaySpend > Math.floor(findCurrentMonth.monthBudget / 30)
+  orange: currentDaySpend.value > Math.floor(findCurrentMonth.value.monthBudget / 30) * 0.7,
+  red: currentDaySpend.value > Math.floor(findCurrentMonth.value.monthBudget / 30)
 }))
-
+const orangeRedClassesWeek = computed(() => ({
+  orange: weeklyExpenses.value > Math.floor(findCurrentMonth.value.monthBudget / 4) * 0.7,
+  red: weeklyExpenses.value > Math.floor(findCurrentMonth.value.monthBudget / 4)
+}))
 </script>
 
 <template>
   <LayoutHeader :title="findCurrentMonth.name">
     <el-row :gutter="10" class="no-padding">
-      <el-col :xs="12" :sm="12">
+      <el-col :span="8">
         <div class="info-box padding">
           <p class="title">Dziś</p> 
             <p><span class="big green" :class="orangeRedClassesDay">{{currentDaySpend}}</span> / <span>{{Math.floor(findCurrentMonth.monthBudget / 30)}}</span> <span class="small">PLN</span></p>
         </div>
       </el-col>  
+      <el-col :span="8">
+        <div class="info-box padding">
+          <p class="title">Od niedzieli</p> 
+            <p><span class="big green" :class="orangeRedClassesWeek">{{weeklyExpenses}}</span> / <span>{{Math.floor(findCurrentMonth.monthBudget / 4)}}</span> <span class="small">PLN</span></p>
+        </div>        
+      </el-col>
       <MonthBudgetSpend />            
     </el-row>
   </LayoutHeader>

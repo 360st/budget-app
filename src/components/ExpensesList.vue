@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useExpensesStore } from '../stores/expenses'
+import Date from '../date'
 
 const props = defineProps({
     query: {
@@ -8,17 +9,16 @@ const props = defineProps({
         required: true
     },
 })
-
+const { day, month } = Date
 const { categories } = useExpensesStore()
-
 </script>
 <template>
     <el-row class="small-pad-bottom-top" v-for="(expense, index) in props.query" :key="index">
        <el-row class="wrapper">
-          <el-col :xs="18" :sm="19">
-              <p class="product-type"><span class="grey">{{expense.displayDay}}.{{expense.displayMonth}} </span> {{expense.category}}</p>
+          <el-col :span="18">
+              <p class="product-type"><span class="grey" v-if="expense.day !== day && expense.month === month">{{expense.displayDay}}.{{expense.displayMonth}} </span> {{expense.category}}</p>
           </el-col>
-          <el-col :xs="6" :sm="6" style="text-align:right">
+          <el-col :span="6" style="text-align:right">
               <p class="price">{{expense.price}} <span class="small">PLN</span></p>
           </el-col>
           <el-col :span="24" v-for="(categories, index) in categories" :key="index">
