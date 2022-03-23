@@ -42,7 +42,7 @@ const simpleValidation = computed(() => {
         <h2>Budżet miesięczny na {{findCurrentMonth.name}}</h2>
       </el-col>
     </el-row> 
-    <el-row>
+    <el-row class="no-padding"> 
       <el-col class="m-05">
         <el-form>
           <el-row :gutter="10">
@@ -52,7 +52,7 @@ const simpleValidation = computed(() => {
               </el-input>
             </el-col>
             <el-col :span="8">
-               <el-button @click="addMonthBudget(monthBudget)" size="large" type="default"><span style="margin-right:5px">Dodaj</span> <el-icon :size="20"><edit-pen  /></el-icon></el-button> 
+               <el-button @click="addMonthBudget(monthBudget)" size="large" type="default"><span style="margin-right:5px">Zapisz</span> <el-icon :size="20"><edit-pen  /></el-icon></el-button> 
             </el-col>
           </el-row>
         </el-form>

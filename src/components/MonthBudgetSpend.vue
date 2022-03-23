@@ -19,8 +19,8 @@ const orangeRedClassesMonth = computed(() => ({
     <el-col :span="8">
       <div class="info-box padding">
         <p class="title">W tym miesiącu</p>
-        <p v-if="!props.query"><span class="big green" :class="orangeRedClassesMonth">{{findCurrentMonth.spend}}</span> / {{findCurrentMonth.monthBudget}}<span></span> <span class="small">PLN</span></p>
-        <p v-else><span class="big green" :class="orangeRedClassesMonth">{{props.query.spend}}</span> / {{props.query.monthBudget}}<span></span> <span class="small">PLN</span></p>
+        <p v-if="!props.query"><span class="green" :class="orangeRedClassesMonth"><strong>{{findCurrentMonth.spend}}</strong></span> / {{findCurrentMonth.monthBudget}}<span></span> <span class="small">PLN</span></p>
+        <p v-else><span class="green" :class="orangeRedClassesMonth">{{props.query.spend}}</span> / {{props.query.monthBudget}}<span></span> <span class="small">PLN</span></p>
       </div>
     </el-col>     
 </template>

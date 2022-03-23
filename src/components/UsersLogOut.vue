@@ -18,8 +18,8 @@ const logOut = () => {
     span {
         position: absolute;
         color: #fff;
-        right: 20px;
-        top: 10px;
+        right: 0px;
+        top: 0px;
         cursor: pointer;
         font-weight: 300;
         z-index: 2

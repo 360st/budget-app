@@ -1,7 +1,8 @@
 <script setup>
-import { computed, ref } from 'vue'
 import { useExpensesStore } from '../stores/expenses'
+import { storeToRefs } from 'pinia'
 import Date from '../date'
+
 
 const props = defineProps({
     query: {
@@ -10,7 +11,8 @@ const props = defineProps({
     },
 })
 const { day, month } = Date
-const { categories } = useExpensesStore()
+const { categories } = storeToRefs(useExpensesStore())
+
 </script>
 <template>
     <el-row class="small-pad-bottom-top" v-for="(expense, index) in props.query" :key="index">

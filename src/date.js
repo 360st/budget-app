@@ -1,8 +1,8 @@
 let date = new Date();
 let month = date.getMonth()
 let displayMonth = date.getMonth() + 1
-let day = date.getDate()
 let displayDay = date.getDate()
+let day = date.getDate()
 let week = date.getDay()
 let year = date.getFullYear()
 

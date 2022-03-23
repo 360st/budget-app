@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia'
 import { getAuth } from "firebase/auth";
-import { doc, setDoc, getFirestore, updateDoc } from "firebase/firestore"; 
+import { doc, setDoc, getFirestore, updateDoc, addDoc, collection } from "firebase/firestore"; 
 import firebase from '../firebase/firebase'
 import Date from '../date'
 
 const {day, displayDay, displayMonth, month, date, year, week} = Date
 const db = getFirestore();
 const auth = getAuth();
-
 
 export const useExpensesStore = defineStore('main',{
   state: () => ({
@@ -138,12 +137,7 @@ export const useExpensesStore = defineStore('main',{
         name: 'Alkohol',
         budget: null,
         sum:0
-      },
-      {
-        name: 'Telefon',
-        budget: null,
-        sum: 0
-      },
+      }
     ],
     expenses: []    
   }),
@@ -200,18 +194,18 @@ export const useExpensesStore = defineStore('main',{
       })      
     },
     updateStartWeek(){
-      if(week === 1){
+      if(week === 0){
         setDoc(doc(db, "startWeek", "1"),{
-          startWeek: day
+          startWeek: `${day}.${month}`
         })
       }         
     },
-    addExpenses(price, category){
-      let randomId = () => {
-        return (this.expenses.length + 1).toString()
-      } 
+    async addExpenses(price, category){
+      // let randomId = () => {
+      //   return (this.expenses.length + 1)
+      // } 
       this.categories.filter(e => e.name === category).map(e => e.sum += price)
-      updateDoc(doc(db, "users", auth.currentUser.uid, "categories", auth.currentUser.uid), {
+      await updateDoc(doc(db, "users", auth.currentUser.uid, "categories", auth.currentUser.uid), {
         categories: this.categories
       }) 
       //this.expenses.unshift({price, category, displayMonth, month, day, displayDay})
@@ -219,7 +213,7 @@ export const useExpensesStore = defineStore('main',{
       updateDoc(doc(db, "users", auth.currentUser.uid, "months", auth.currentUser.uid), {
         months: this.months
       })       
-      setDoc(doc(db, "users", auth.currentUser.uid, "expenses", randomId()), {
+      addDoc(collection(db, "users", auth.currentUser.uid, "expenses"), {
         price,
         category,
         displayMonth,

@@ -1,18 +1,16 @@
 <script setup>
 import { useExpensesStore } from './stores/expenses'
 import { getAuth, onAuthStateChanged  } from "firebase/auth";
-import { onSnapshot, getFirestore, doc, collection } from "firebase/firestore"; 
+import { onSnapshot, getFirestore, doc, collection, orderBy, query, where } from "firebase/firestore"; 
 import { useRouter } from 'vue-router'
 
 const { updateMonthsFirebase, updateCategoriesFirebase, updateExpensesFirebase, updateStart } =  useExpensesStore()
 const db = getFirestore()
 const router = useRouter()
 const auth = getAuth();
+
 onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    console.log('wylogowano')
-    router.replace({name: 'login'})    
-  } else {
+  if (user) {
     const uid = user.uid;
     onSnapshot(doc(db, "users", user.uid, "months", user.uid), (doc) => {
       updateMonthsFirebase(doc.data().months)
@@ -23,15 +21,17 @@ onAuthStateChanged(auth, (user) => {
     onSnapshot(doc(db, "startWeek", "1"), (doc) => {
       updateStart(doc.data().startWeek)
     })
-    let query = collection(db, "users", user.uid, "expenses")
-    onSnapshot(query, (querySnapshot) => {
+    let q = query(collection(db, "users", user.uid, "expenses"), orderBy("day"), orderBy("category"))
+    onSnapshot(q, (querySnapshot) => {
       let data = []
       querySnapshot.forEach((doc) => {
-        data.unshift(doc.data())
+        data.push(doc.data())
       })
       updateExpensesFirebase(data)
     })
-    
+  } else {
+    console.log('wylogowano')
+    router.replace({name: 'login'})    
   }
 });
 </script>

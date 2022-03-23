@@ -19,6 +19,7 @@ const orangeRedClassesWeek = computed(() => ({
   orange: weeklyExpenses.value > Math.floor(findCurrentMonth.value.monthBudget / 4) * 0.7,
   red: weeklyExpenses.value > Math.floor(findCurrentMonth.value.monthBudget / 4)
 }))
+
 </script>
 
 <template>
@@ -27,13 +28,13 @@ const orangeRedClassesWeek = computed(() => ({
       <el-col :span="8">
         <div class="info-box padding">
           <p class="title">Dziś</p> 
-            <p><span class="big green" :class="orangeRedClassesDay">{{currentDaySpend}}</span> / <span>{{Math.floor(findCurrentMonth.monthBudget / 30)}}</span> <span class="small">PLN</span></p>
+            <p><span class="green" :class="orangeRedClassesDay"><strong>{{currentDaySpend}}</strong></span> / <span>{{Math.floor(findCurrentMonth.monthBudget / 30)}}</span> <span class="small">PLN</span></p>
         </div>
       </el-col>  
       <el-col :span="8">
         <div class="info-box padding">
           <p class="title">Od niedzieli</p> 
-            <p><span class="big green" :class="orangeRedClassesWeek">{{weeklyExpenses}}</span> / <span>{{Math.floor(findCurrentMonth.monthBudget / 4)}}</span> <span class="small">PLN</span></p>
+            <p><span class="green" :class="orangeRedClassesWeek"><strong>{{weeklyExpenses}}</strong></span> / <span>{{Math.floor(findCurrentMonth.monthBudget / 4)}}</span> <span class="small">PLN</span></p>
         </div>        
       </el-col>
       <MonthBudgetSpend />            
