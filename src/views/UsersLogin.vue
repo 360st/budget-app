@@ -1,5 +1,4 @@
 <script setup>
-import { EditPen } from '@element-plus/icons-vue'
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { doc, setDoc, getFirestore } from "firebase/firestore"; 
 import { useExpensesStore } from '../stores/expenses'
@@ -7,7 +6,6 @@ import { useRouter } from  'vue-router'
 import { storeToRefs } from 'pinia';
 import firebase from '../firebase/firebase'
 import LayoutHeader from '../components/LayoutHeader.vue'
-import LayoutFooter from '../components/LayoutFooter.vue'
 
 
 const { months, categories } = useExpensesStore()
@@ -47,9 +45,6 @@ signInWithPopup(auth, provider)
 </script>
 <template>
   <LayoutHeader title="Logowanie" />
-  <img @click="login" src="../assets/btn_google_signin_light_focus_web.png" />
-  <LayoutFooter>
-    <el-button @click="router.push({name: 'expenses'})" size="large" type="success" color="#002a3a"><span style="margin-right:5px">Dodaj</span> <el-icon :size="20"><edit-pen  /></el-icon></el-button>
-  </LayoutFooter>    
+  <img @click="login" src="../assets/btn_google_signin_light_focus_web.png" />   
 </template>
 <style></style>

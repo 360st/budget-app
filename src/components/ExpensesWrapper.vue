@@ -2,12 +2,13 @@
 import { ref, watchEffect } from 'vue'
 import { useExpensesStore } from '../stores/expenses'
 import ExpensesList from '../components/ExpensesList.vue'
+import SkeletonComponent from '../components/SkeletonComponent.vue'
 
 import Date from '../date'
 import { storeToRefs } from 'pinia'
 
 
-const { expenses } = storeToRefs(useExpensesStore())
+const { expenses, userId } = storeToRefs(useExpensesStore())
 const { day, month } = Date
 
 const showMore = ref(false)
@@ -29,7 +30,10 @@ watchEffect(()=> {
     </el-row>  
    </section> 
    <section> 
-     <ExpensesList :query="todayExpensesList" /> 
+     <el-row v-if="userId === null">
+        <SkeletonComponent />  
+     </el-row>   
+     <ExpensesList v-else :query="todayExpensesList" /> 
      <el-row>
        <el-col class="text-center">
          <el-button @click="showMore = true" round class="show-more">pozostałe dni</el-button>

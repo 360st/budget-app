@@ -120,6 +120,12 @@ h1, h2, h3, h4, h5, h6 {
 .red{
   color: rgb(252, 62, 62) !important;
 }
+.orangeBq {
+  background-color: rgb(250, 180, 50)
+}
+.redBq{
+  background-color: rgb(252, 62, 62) !important;
+}
 .text-center {
   text-align: center;
 }

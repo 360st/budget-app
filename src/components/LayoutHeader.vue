@@ -1,6 +1,9 @@
 <script setup>
-import UsersLogOut from '../components/UsersLogOut.vue'
 import { useRoute } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
+import { useExpensesStore } from '../stores/expenses'
+import UsersLogOut from '../components/UsersLogOut.vue'
 
 const props = defineProps({
     title: {
@@ -9,9 +12,15 @@ const props = defineProps({
 })
 const route = useRoute()
 
+const { findCurrentMonth } = storeToRefs(useExpensesStore())
+
+const orangeRedClassesMonth = computed(() => ({
+  orangeBq: findCurrentMonth.value.spend > findCurrentMonth.value.monthBudget * 0.8,
+  redBq: findCurrentMonth.value.spend > findCurrentMonth.value.monthBudget
+}))
 </script>
 <template>
-    <header>
+    <header :class="orangeRedClassesMonth">
       <el-row v-if="route.name !== 'login'">
         <el-col>
           <UsersLogOut />
@@ -19,7 +28,7 @@ const route = useRoute()
       </el-row>
       <el-row>
         <el-col>
-            <h1>{{props.title}}</h1>
+            <h1>{{props.title}}</h1>  
             <slot></slot>
         </el-col>
       </el-row>          
@@ -33,7 +42,17 @@ const route = useRoute()
     h1 {
       color: #fff;
       font-size: 40px;
-      padding:1rem 0;
+      padding:1rem 0 1rem 0;
+      text-align: center;
+    }
+    .current-month {
+      color: #fff;
+      margin:-2rem 0 1rem 0;
+      font-size: 20px;
+      width: 100%;
+      p, span {
+        font-weight: 300;
+      }
     }
     .info-box {
       background: #fff;

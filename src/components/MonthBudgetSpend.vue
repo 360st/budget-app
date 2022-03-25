@@ -1,26 +1,21 @@
 <script setup>
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
 import { useExpensesStore } from '../stores/expenses'
 
 const props = defineProps({
   query: Object
 })
 
-const { findCurrentMonth, currentDaySpend } = storeToRefs(useExpensesStore())
-
-const orangeRedClassesMonth = computed(() => ({
-  orange: currentDaySpend.value > findCurrentMonth.value.monthBudget * 0.7,
-  red: currentDaySpend.value > findCurrentMonth.value.monthBudget
-}))
+const { findCurrentMonth } = storeToRefs(useExpensesStore())
 
 </script>
 <template>
-    <el-col :span="8">
-      <div class="info-box padding">
-        <p class="title">W tym miesiącu</p>
-        <p v-if="!props.query"><span class="green" :class="orangeRedClassesMonth"><strong>{{findCurrentMonth.spend}}</strong></span> / {{findCurrentMonth.monthBudget}}<span></span> <span class="small">PLN</span></p>
-        <p v-else><span class="green" :class="orangeRedClassesMonth">{{props.query.spend}}</span> / {{props.query.monthBudget}}<span></span> <span class="small">PLN</span></p>
+  <el-row>
+    <el-col :span="24">
+      <div class="text-center current-month">
+        <p v-if="!props.query">{{findCurrentMonth.spend}} / {{findCurrentMonth.monthBudget}} PLN</p>
+        <p v-else>{{props.query.spend}} / {{props.query.monthBudget}} PLN</p>
       </div>
     </el-col>     
+  </el-row>
 </template>

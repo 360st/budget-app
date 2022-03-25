@@ -4,11 +4,12 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import ExpensesWrapper from '../components/ExpensesWrapper.vue'
 import LayoutHeader from '../components/LayoutHeader.vue'
-import MonthBudgetSpend from '../components/MonthBudgetSpend.vue'
 import LayoutFooterMain from '../components/LayoutFooterMain.vue'
+import MonthBudgetSpend from '../components/MonthBudgetSpend.vue'
+import SkeletonComponent from '../components/SkeletonComponent.vue'
 
 const store = useExpensesStore()
-const { selectActualMonth, findCurrentMonth, currentDaySpend, weeklyExpenses } = storeToRefs(store)
+const { selectActualMonth, findCurrentMonth, currentDaySpend, weeklyExpenses, userId } = storeToRefs(store)
 
 selectActualMonth.value
 const orangeRedClassesDay = computed(() => ({
@@ -19,25 +20,26 @@ const orangeRedClassesWeek = computed(() => ({
   orange: weeklyExpenses.value > Math.floor(findCurrentMonth.value.monthBudget / 4) * 0.7,
   red: weeklyExpenses.value > Math.floor(findCurrentMonth.value.monthBudget / 4)
 }))
-
 </script>
 
 <template>
   <LayoutHeader :title="findCurrentMonth.name">
+    <MonthBudgetSpend />  
     <el-row :gutter="10" class="no-padding">
-      <el-col :span="8">
+      <el-col :span="12">
         <div class="info-box padding">
           <p class="title">Dziś</p> 
-            <p><span class="green" :class="orangeRedClassesDay"><strong>{{currentDaySpend}}</strong></span> / <span>{{Math.floor(findCurrentMonth.monthBudget / 30)}}</span> <span class="small">PLN</span></p>
+          <SkeletonComponent v-if="userId === null" />
+          <p v-else><span  class="big green" :class="orangeRedClassesDay">{{ currentDaySpend }}</span> / <span>{{Math.floor(findCurrentMonth.monthBudget / 30)}}</span> PLN</p>
         </div>
       </el-col>  
-      <el-col :span="8">
+      <el-col :span="12">
         <div class="info-box padding">
           <p class="title">Od niedzieli</p> 
-            <p><span class="green" :class="orangeRedClassesWeek"><strong>{{weeklyExpenses}}</strong></span> / <span>{{Math.floor(findCurrentMonth.monthBudget / 4)}}</span> <span class="small">PLN</span></p>
+          <SkeletonComponent  v-if="userId === null" />
+          <p v-else><span class="big green" :class="orangeRedClassesWeek">{{  weeklyExpenses }}</span> / <span>{{Math.floor(findCurrentMonth.monthBudget / 4)}}</span> PLN</p>
         </div>        
-      </el-col>
-      <MonthBudgetSpend />            
+      </el-col>          
     </el-row>
   </LayoutHeader>
   <ExpensesWrapper />

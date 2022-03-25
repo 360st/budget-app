@@ -6,7 +6,7 @@ import { EditPen, Back } from '@element-plus/icons-vue'
    <footer>
      <el-row :gutter="10">
        <el-col :span="12">
-         <router-link to="/"><el-button size="large"><span style="margin-right:5px"></span> <el-icon :size="20"><back /></el-icon></el-button></router-link>
+         <router-link :to="{name: 'home'}"><el-button size="large"><span style="margin-right:5px"></span> <el-icon :size="20"><back /></el-icon></el-button></router-link>
        </el-col>    
        <el-col :span="12">
          <slot></slot>  

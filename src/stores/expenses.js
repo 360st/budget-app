@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { getAuth } from "firebase/auth";
-import { doc, setDoc, getFirestore, updateDoc, addDoc, collection } from "firebase/firestore"; 
+import { doc, setDoc, getFirestore, updateDoc, addDoc, collection, onSnapshot, orderBy, query, where } from "firebase/firestore"; 
 import firebase from '../firebase/firebase'
 import Date from '../date'
 
@@ -11,6 +11,7 @@ const auth = getAuth();
 export const useExpensesStore = defineStore('main',{
   state: () => ({
     startWeek: 0,
+    userId: null,
     months: [
       {
         id: 0,
@@ -104,6 +105,11 @@ export const useExpensesStore = defineStore('main',{
         sum: 0,
       },
       {
+        name: 'Alkohol',
+        budget: null,
+        sum:0
+      },
+      {
         name: 'Opłaty za obiady',
         budget: 200,
         sum: 0
@@ -132,14 +138,10 @@ export const useExpensesStore = defineStore('main',{
         name: 'Prąd',
         budget: null,
         sum: 0
-      },      
-      {
-        name: 'Alkohol',
-        budget: null,
-        sum:0
-      }
+      }      
     ],
-    expenses: []    
+    expenses: [], 
+    expensesOthersMonths: []
   }),
   getters: {
     selectActualMonth(state){
@@ -149,71 +151,93 @@ export const useExpensesStore = defineStore('main',{
       return state.months.find(month => month.current === true)
     },
     currentDaySpend(state){
-      return new Array(state.expenses.filter(currDay => currDay.day === day).map(e => e.price)).flat().reduce((a,b) => a + b, 0)
+      return new Array(state.expenses.filter(currDay => currDay.day === day).map(e => e.price)).flat().reduce((a,b) =>a + b, 0)
     },
     weeklyExpenses (state){
       return new Array(state.expenses.filter(e => e.startWeek === state.startWeek).map(e => e.price)).flat().reduce((a,b) => a + b, 0)
     }
   },
   actions: {
-    updateStart(data){
-      this.startWeek = data
+    downloadFirebaseData(){
+      onSnapshot(doc(db, "users", auth.currentUser.uid, "months", auth.currentUser.uid), (doc) => {
+        this.months = doc.data().months
+      })
+      onSnapshot(doc(db, "users", auth.currentUser.uid, "categories", auth.currentUser.uid), (doc) => {
+        this.categories = doc.data().categories
+      })     
+      onSnapshot(doc(db, "startWeek", "1"), (doc) => {
+        this.startWeek = doc.data().startWeek
+      })
+      let q = query(collection(db, "users", auth.currentUser.uid, "expenses"), where("month", "==", month), orderBy("day"), orderBy("category"))
+      onSnapshot(q, (querySnapshot) => {
+        let data = []
+        querySnapshot.forEach((doc) => { 
+          data.push(doc.data())
+      })
+        this.expenses = data
+        if(this.userId === null){
+          this.userId = auth.currentUser.uid
+        }   
+      })
     },
-    updateExpensesFirebase(data){
-      this.expenses = data
+    downloadFirebaseExpenses(data){
+      let q = query(collection(db, "users", auth.currentUser.uid, "expenses"), where("month", "==", data), orderBy("day"), orderBy("category"))
+      if(!this.expensesOthersMonths.some((e) => e.month === data)){
+        onSnapshot(q, (querySnapshot) => {
+          let data = []
+          querySnapshot.forEach((doc)=> {
+            data.push(doc.data())
+          })
+          this.expensesOthersMonths = [...this.expensesOthersMonths, ...data]
+        })
+      }
     },
-    updateCategoriesFirebase(data) {
-      this.categories = data
+    updateCategoryFunction(){
+      return updateDoc(doc(db, "users", auth.currentUser.uid, "categories", auth.currentUser.uid), {
+        categories: this.categories
+      })    
     },
-    updateMonthsFirebase(data){
-      this.months = data
+    updateMonthsFunction(){
+      return updateDoc(doc(db, "users", auth.currentUser.uid, "months", auth.currentUser.uid), {
+        months: this.months
+      })    
     },
 
-    addMonthBudget(value){
+    async addMonthBudget(value){
       this.months.find(el => el.id === date.getMonth()).monthBudget = value
-      updateDoc(doc(db, "users", auth.currentUser.uid, "months", auth.currentUser.uid), {
-        months: this.months
-      })        
+      await this.updateMonthsFunction()    
     },
-    addCategory(data){
+
+    async addCategory(data){
       this.categories.unshift({...data, sum:0})
-      updateDoc(doc(db, "users", auth.currentUser.uid, "categories", auth.currentUser.uid), {
-        categories: this.categories
-      })      
+      await this.updateCategoryFunction()    
     },
-    editCategory(index, value){
+
+    async editCategory(index, value){
       this.categories[index].budget = value
-      updateDoc(doc(db, "users", auth.currentUser.uid, "categories", auth.currentUser.uid), {
-        categories: this.categories
-      })
+      await this.updateCategoryFunction()
     },   
-    removeCategory(index){
+
+    async removeCategory(index){
       this.categories.splice(index, 1)
-      updateDoc(doc(db, "users", auth.currentUser.uid, "categories", auth.currentUser.uid), {
-        categories: this.categories
-      })      
+      await this.updateCategoryFunction()
     },
-    updateStartWeek(){
+
+    async updateStartWeek(){
       if(week === 0){
-        setDoc(doc(db, "startWeek", "1"),{
+        await setDoc(doc(db, "startWeek", "1"),{
           startWeek: `${day}.${month}`
         })
       }         
     },
     async addExpenses(price, category){
-      // let randomId = () => {
-      //   return (this.expenses.length + 1)
-      // } 
       this.categories.filter(e => e.name === category).map(e => e.sum += price)
-      await updateDoc(doc(db, "users", auth.currentUser.uid, "categories", auth.currentUser.uid), {
-        categories: this.categories
-      }) 
-      //this.expenses.unshift({price, category, displayMonth, month, day, displayDay})
+      await this.updateCategoryFunction()
+
       this.months.find(curr => curr.current === true).spend += price
-      updateDoc(doc(db, "users", auth.currentUser.uid, "months", auth.currentUser.uid), {
-        months: this.months
-      })       
-      addDoc(collection(db, "users", auth.currentUser.uid, "expenses"), {
+      await this.updateMonthsFunction() 
+
+      await addDoc(collection(db, "users", auth.currentUser.uid, "expenses"), {
         price,
         category,
         displayMonth,

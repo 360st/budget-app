@@ -3,7 +3,6 @@ import { useExpensesStore } from '../stores/expenses'
 import { storeToRefs } from 'pinia'
 import Date from '../date'
 
-
 const props = defineProps({
     query: {
         type: [Object, Number],

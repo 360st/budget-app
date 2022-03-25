@@ -2,28 +2,32 @@
 import { EditPen, CopyDocument, User } from '@element-plus/icons-vue'
 import { useExpensesStore } from '../stores/expenses'
 import { useRouter } from 'vue-router'
-import { computed } from 'vue'
+import { computed, watchEffect, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import LayoutHeader from '../components/LayoutHeader.vue'
 import MonthBudgetSpend from '../components/MonthBudgetSpend.vue'
 import ExpensesList from '../components/ExpensesList.vue'
 import LayoutFooter from '../components/LayoutFooter.vue'
 
+
 const props = defineProps({
     id: String
 })
+const { months, selectActualMonth, findCurrentMonth, expensesOthersMonths } = storeToRefs(useExpensesStore())
 const router = useRouter()
-const { months, selectActualMonth, findCurrentMonth, expenses } = useExpensesStore()
-const monthExpensesSpendFilter = expenses.filter(e => e.month == props.id)
-const monthId = months.find(e => e.id == props.id)
-const title = computed(() => months[props.id].name)
+const monthExpensesSpendFilter = ref(null)
+const monthId = months.value.find(e => e.id == props.id)
+const title = computed(() => months.value[props.id].name)
+
+watchEffect(()=> {
+  monthExpensesSpendFilter.value = expensesOthersMonths.value.filter(e => e.month == props.id)
+})
 
 </script>
 
 <template>
   <LayoutHeader :title="title">
-    <el-row :gutter="10" class="no-padding">  
       <MonthBudgetSpend :query="monthId" />            
-    </el-row>
   </LayoutHeader>
   <section>
     <div v-if="monthExpensesSpendFilter.length === 0" class="text-center">

@@ -60,7 +60,7 @@ const simpleValidation = computed(() => {
     </el-row>     
   </main>
    <LayoutFooter>
-     <el-button @click="addExpenses(parseInt(price,10), category), resetForm()" :disabled="simpleValidation" size="large" type="success" color="#002a3a"><span style="margin-right:5px">Dodaj</span> <el-icon :size="20"><edit-pen  /></el-icon></el-button>
+     <el-button @click="addExpenses(parseFloat(price), category), resetForm()" :disabled="simpleValidation" size="large" type="success" color="#002a3a"><span style="margin-right:5px">Dodaj</span> <el-icon :size="20"><edit-pen  /></el-icon></el-button>
    </LayoutFooter>   
 </template>
 
