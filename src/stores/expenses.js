@@ -202,7 +202,11 @@ export const useExpensesStore = defineStore('main',{
         months: this.months
       })    
     },
-
+    sortCategoriesAlphabetical() {
+     this.categories.sort((a, b) => {
+      return a.name.localeCompare(b.name)
+     })
+    },
     async addMonthBudget(value){
       this.months.find(el => el.id === date.getMonth()).monthBudget = value
       await this.updateMonthsFunction()    
@@ -210,6 +214,7 @@ export const useExpensesStore = defineStore('main',{
 
     async addCategory(data){
       this.categories.unshift({...data, sum:0})
+      this.sortCategoriesAlphabetical()
       await this.updateCategoryFunction()    
     },
 

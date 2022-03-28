@@ -15,7 +15,6 @@ const hide = () => {
   budget.value = null
   clicedIndex.value = null
 }
-
 </script>
 <template>
   <el-row class="small-pad-bottom-top" v-for="(categories, index) in categories" :key="index" >
