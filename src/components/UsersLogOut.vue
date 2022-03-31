@@ -7,6 +7,7 @@ const router = useRouter()
 const logOut = () => {
     signOut(auth).then(()=> {
         router.push({name: 'login'})
+        localStorage.removeItem('logged')
     })
 }
 

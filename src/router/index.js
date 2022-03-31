@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useExpensesStore } from '../stores/expenses'
 import HomeView from '../views/HomeView.vue'
 import Expenses from '../views/Expenses.vue'
 import Category from '../views/Category.vue'
@@ -21,7 +22,7 @@ const router = createRouter({
     {
       path: '/kategoria',
       name: 'category',
-      component: Category,    
+      component: Category,   
     },
     {
       path: '/:id',
@@ -32,10 +33,20 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: UsersLogin
+      component: UsersLogin,
     }
   ]
 })
 
 export default router
 
+// router.beforeEach((to, from)=> {
+//   const store = useExpensesStore()
+//   if(to.meta.requiresAuth && !store.logged){
+
+//     return {
+//       name: 'login',
+//     }
+
+//   } 
+// })

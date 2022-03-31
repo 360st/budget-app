@@ -7,11 +7,13 @@ const { downloadFirebaseData } = useExpensesStore()
 const router = useRouter()
 const auth = getAuth();
 
+if(localStorage.getItem('logged') === null){
+  router.push({name: 'login'})
+} 
+
 onAuthStateChanged(auth, (user) => {
   if(user){
     downloadFirebaseData()
-  } else {
-    router.push({name: 'login'})
   }
 })
 </script>

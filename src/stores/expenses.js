@@ -177,10 +177,11 @@ export const useExpensesStore = defineStore('main',{
         this.expenses = data
         if(this.userId === null){
           this.userId = auth.currentUser.uid
-        }   
+          localStorage.setItem("logged", true)
+        }
       })
     },
-    downloadFirebaseExpenses(data){
+    downloadFirebaseExpensesOtherMonths(data){
       let q = query(collection(db, "users", auth.currentUser.uid, "expenses"), where("month", "==", data), orderBy("day"), orderBy("category"))
       if(!this.expensesOthersMonths.some((e) => e.month === data)){
         onSnapshot(q, (querySnapshot) => {
