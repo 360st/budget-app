@@ -2,14 +2,18 @@
 import { useExpensesStore } from './stores/expenses'
 import { getAuth, onAuthStateChanged  } from "firebase/auth";
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia';
 
-const { downloadFirebaseData } = useExpensesStore()
+const { downloadFirebaseData, findIndexOfCurrentMonthFunction } = useExpensesStore()
+const { selectActualMonth } = storeToRefs(useExpensesStore())
 const router = useRouter()
 const auth = getAuth();
 
 if(localStorage.getItem('logged') === null){
   router.push({name: 'login'})
 } 
+selectActualMonth.value
+findIndexOfCurrentMonthFunction()
 
 onAuthStateChanged(auth, (user) => {
   if(user){

@@ -8,10 +8,15 @@ const {day, displayDay, displayMonth, month, date, year, week} = Date
 const db = getFirestore();
 const auth = getAuth();
 
+const selectActualMonthFunction = (state) => {
+  day === 1 && state.months.forEach(month => month.current = false)
+  state.months.find(el => el.id === date.getMonth()).current = true
+}
 export const useExpensesStore = defineStore('main',{
   state: () => ({
     startWeek: 0,
     userId: null,
+    currentMonthIndex: null,
     months: [
       {
         id: 0,
@@ -145,10 +150,10 @@ export const useExpensesStore = defineStore('main',{
   }),
   getters: {
     selectActualMonth(state){
-      return state.months.find(el => el.id === date.getMonth()).current = true
+      return selectActualMonthFunction(state)
     },
     findCurrentMonth(state){
-      return state.months.find(month => month.current === true)
+      return state.months[state.currentMonthIndex]
     },
     currentDaySpend(state){
       return new Array(state.expenses.filter(currDay => currDay.day === day).map(e => e.price)).flat().reduce((a,b) =>a + b, 0)
@@ -158,6 +163,9 @@ export const useExpensesStore = defineStore('main',{
     }
   },
   actions: {
+    findIndexOfCurrentMonthFunction(){
+      this.currentMonthIndex = this.months.findIndex(curr => curr.current === true)
+    },        
     downloadFirebaseData(){
       onSnapshot(doc(db, "users", auth.currentUser.uid, "months", auth.currentUser.uid), (doc) => {
         this.months = doc.data().months
@@ -179,6 +187,15 @@ export const useExpensesStore = defineStore('main',{
           this.userId = auth.currentUser.uid
           localStorage.setItem("logged", true)
         }
+        if(week === 0){
+          setDoc(doc(db, "startWeek", "1"),{
+            startWeek: `${day}.${month}`
+          })
+        }   
+        if(day === 1){
+          selectActualMonthFunction(this)
+          this.updateMonthsFunction()
+        }           
       })
     },
     downloadFirebaseExpensesOtherMonths(data){
@@ -208,8 +225,9 @@ export const useExpensesStore = defineStore('main',{
       return a.name.localeCompare(b.name)
      })
     },
+
     async addMonthBudget(value){
-      this.months.find(el => el.id === date.getMonth()).monthBudget = value
+      this.months[this.currentMonthIndex].monthBudget = value
       await this.updateMonthsFunction()    
     },
 
@@ -228,19 +246,11 @@ export const useExpensesStore = defineStore('main',{
       this.categories.splice(index, 1)
       await this.updateCategoryFunction()
     },
-
-    async updateStartWeek(){
-      if(week === 0){
-        await setDoc(doc(db, "startWeek", "1"),{
-          startWeek: `${day}.${month}`
-        })
-      }         
-    },
     async addExpenses(price, category){
       this.categories.filter(e => e.name === category).map(e => e.sum += price)
       await this.updateCategoryFunction()
 
-      this.months.find(curr => curr.current === true).spend += price
+      this.months[this.currentMonthIndex].spend += price
       await this.updateMonthsFunction() 
 
       await addDoc(collection(db, "users", auth.currentUser.uid, "expenses"), {

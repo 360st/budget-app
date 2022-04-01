@@ -3,15 +3,11 @@ import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { doc, setDoc, getFirestore } from "firebase/firestore"; 
 import { useExpensesStore } from '../stores/expenses'
 import { useRouter } from  'vue-router'
-import { storeToRefs } from 'pinia';
 import firebase from '../firebase/firebase'
 import LayoutHeader from '../components/LayoutHeader.vue'
 
 
 const { months, categories } = useExpensesStore()
-const { selectActualMonth } = storeToRefs(useExpensesStore())
-
-selectActualMonth.value
 
 const provider = new GoogleAuthProvider();
 const db = getFirestore();

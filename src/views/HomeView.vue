@@ -9,9 +9,8 @@ import MonthBudgetSpend from '../components/MonthBudgetSpend.vue'
 import SkeletonComponent from '../components/SkeletonComponent.vue'
 
 const store = useExpensesStore()
-const { selectActualMonth, findCurrentMonth, currentDaySpend, weeklyExpenses, userId } = storeToRefs(store)
+const { findCurrentMonth, currentDaySpend, weeklyExpenses, userId } = storeToRefs(store)
 
-selectActualMonth.value
 const orangeRedClassesDay = computed(() => ({
   orange: currentDaySpend.value > Math.floor(findCurrentMonth.value.monthBudget / 30) * 0.7,
   red: currentDaySpend.value > Math.floor(findCurrentMonth.value.monthBudget / 30)
