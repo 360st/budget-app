@@ -2,33 +2,40 @@
 import { useExpensesStore } from '../stores/expenses'
 import { storeToRefs } from 'pinia'
 import Date from '../date'
+import { computed } from '@vue/runtime-core'
 
 const props = defineProps({
     query: {
         type: [Object, Number],
         required: true
     },
+    notCurrentMonth: {
+      type: Boolean
+    }
 })
 const { day, month } = Date
 const { categories } = storeToRefs(useExpensesStore())
+const categoriesHasBudgetList = computed(() => categories.value.filter(e => e.budget !== null))
 
 </script>
 <template>
     <el-row class="small-pad-bottom-top" v-for="(expense, index) in props.query" :key="index">
        <el-row class="wrapper">
           <el-col :span="18">
-              <p class="product-type"><span class="grey" v-if="expense.day !== day && expense.month === month">{{expense.displayDay}}.{{expense.displayMonth}} </span> {{expense.category}}</p>
+              <p class="product-type"><span class="grey" v-if="expense.day !== day">{{expense.displayDay}}.{{expense.displayMonth}} </span> {{expense.category}}</p>
           </el-col>
-          <el-col :span="6" style="text-align:right">
+          <el-col :span="6" class="text-right">
               <p class="price">{{expense.price}} <span class="small">PLN</span></p>
           </el-col>
-          <el-col :span="24" v-for="(categories, index) in categories" :key="index">
-            <div v-if="categories.name === expense.category">
-              <p class="progress" v-if="categories.budget">
-                <span class="progress-bar" :class="{green: categories.sum / categories.budget * 100 < 80, red: categories.sum / categories.budget * 100 > 100}" :style="`width:${categories.sum / categories.budget * 100}% `"></span>  
-              </p>
-            </div>
-          </el-col>
+          <div class="width-100" v-if="!props.notCurrentMonth">
+            <el-col class="width-100" :span="24" v-for="(categories, index) in categoriesHasBudgetList" :key="index">
+              <div v-if="categories.name === expense.category">
+                <p class="progress" v-if="categories.budget">
+                  <span class="progress-bar" :class="{green: categories.sum / categories.budget * 100 < 80, red: categories.sum / categories.budget * 100 > 100}" :style="`width:${categories.sum / categories.budget * 100}% `"></span>  
+                </p>
+              </div>
+            </el-col>
+          </div>
        </el-row>  
     </el-row> 
 </template>

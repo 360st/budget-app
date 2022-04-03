@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watchEffect } from '@vue/runtime-core'
+import { computed, ref } from '@vue/runtime-core'
 import { useExpensesStore } from '../stores/expenses'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import { storeToRefs } from 'pinia'
