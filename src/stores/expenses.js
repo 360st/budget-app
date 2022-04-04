@@ -3,6 +3,7 @@ import { getAuth } from "firebase/auth";
 import { doc, setDoc, getFirestore, updateDoc, addDoc, collection, onSnapshot, orderBy, query, where } from "firebase/firestore"; 
 import firebase from '../firebase/firebase'
 import Date from '../date'
+import { watch } from 'vue';
 
 const {day, displayDay, displayMonth, month, date, year, week} = Date
 const db = getFirestore();
@@ -14,7 +15,8 @@ const selectActualMonthFunction = (state) => {
 }
 export const useExpensesStore = defineStore('main',{
   state: () => ({
-    startWeek: 0,
+    startWeek: String,
+    startMonth: Number,
     userId: null,
     currentMonthIndex: null,
     months: [
@@ -176,6 +178,9 @@ export const useExpensesStore = defineStore('main',{
       onSnapshot(doc(db, "startWeek", "1"), (doc) => {
         this.startWeek = doc.data().startWeek
       })
+      onSnapshot(doc(db, "startMonth", "1"), (doc) => {
+        this.startMonth = doc.data().startMonth
+      })
       let q = query(collection(db, "users", auth.currentUser.uid, "expenses"), where("month", "==", month), orderBy("day"), orderBy("category"))
       onSnapshot(q, (querySnapshot) => {
         let data = []
@@ -191,11 +196,19 @@ export const useExpensesStore = defineStore('main',{
           setDoc(doc(db, "startWeek", "1"),{
             startWeek: `${day}.${month}`
           })
-        }   
+        } 
         if(day === 1){
           selectActualMonthFunction(this)
-          this.updateMonthsFunction()
-        }           
+          this.updateMonthsFunction()  
+
+          if(this.startMonth !== month){
+            this.categories.forEach(e => e.sum = 0)
+            setDoc(doc(db, "startMonth", "1"), {
+              startMonth: month
+            })
+            this.updateCategoryFunction()
+          }          
+        }      
       })
     },
     downloadFirebaseExpensesOtherMonths(data){

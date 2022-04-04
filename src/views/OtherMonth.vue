@@ -19,7 +19,7 @@ const router = useRouter()
 const monthId = months.value.find(e => e.id == props.id)
 const title = computed(() => months.value[props.id].name)
 const monthExpensesSpendFilter = computed(() => expensesOthersMonths.value.filter(e => e.month == props.id))
-console.log(monthExpensesSpendFilter.value)
+
 </script>
 
 <template>
